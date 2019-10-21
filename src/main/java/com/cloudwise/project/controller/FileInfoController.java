@@ -1,6 +1,7 @@
 package com.cloudwise.project.controller;
 
 import com.cloudwise.project.service.FileInfoService;
+import com.cloudwise.project.vo.ResultData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,26 +22,26 @@ public class FileInfoController {
     @Autowired
     private FileInfoService fileInfoService;
     @RequestMapping("/upload")
-    public Map<String,Object>  uploadFile(@RequestParam("file") MultipartFile file[]) throws IOException {
-        Map<String, Object> uploadResult = fileInfoService.uploadFile(file, "hu");
+    public ResultData  uploadFile(@RequestParam("file") MultipartFile file[], @RequestParam("uploader") String uploader) throws IOException {
+        ResultData uploadResult = fileInfoService.uploadFile(file, "uploader");
         return uploadResult;
     }
 
     @RequestMapping("/delete")
-    public Map<String,Object> deleteFile(@RequestParam("name")String name,@RequestParam("type")String type){
-        Map<String, Object> deleteResult = fileInfoService.deleteFile(name,type);
+    public ResultData deleteFile(@RequestParam("name")String name,@RequestParam("type")String type){
+        ResultData deleteResult = fileInfoService.deleteFile(name,type);
         return deleteResult;
     }
 
     @RequestMapping("/getAllfile")
-    public Map<String,Object> getAllfile(){
-        Map<String, Object> allfile = fileInfoService.getAllfile();
+    public ResultData getAllfile(){
+        ResultData allfile = fileInfoService.getAllfile();
         return allfile;
     }
 
     @RequestMapping("/getPath")
-    public String getPath(@RequestParam("id")String id){
-        String path = fileInfoService.getPath(id);
+    public ResultData getPath(@RequestParam("id")String id){
+        ResultData path = fileInfoService.getPath(id);
         return path;
     }
 }

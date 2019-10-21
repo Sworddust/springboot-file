@@ -1,14 +1,17 @@
 package com.cloudwise.project.util;
 
 import com.cloudwise.project.conf.FtpConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.*;
-
+@Slf4j
 public class FtpUtil {
+
 
     public static Boolean uploadFile(FtpConfig ftpConfig,
                                      String filename, InputStream input) throws IOException {
@@ -35,6 +38,7 @@ public class FtpUtil {
             ftp.setFileType(FTP.BINARY_FILE_TYPE);
             // 12.真正的上传其实在storeFile()方法中 返回值为Boolean类型 true:上传成功 false:上传失败
             if (!ftp.storeFile(filename, input)) {
+                log.error(filename+"文件上传失败。发生异常");
                 return false;
             }
             // 13.关闭输入流
@@ -42,7 +46,7 @@ public class FtpUtil {
             // 14.退出ftp的登录
             ftp.logout();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("文件上传异常");
             throw new IOException(e);
         } finally {
             if (ftp.isConnected()) {
@@ -157,4 +161,5 @@ public class FtpUtil {
         }
         return true;
     }
+
 }

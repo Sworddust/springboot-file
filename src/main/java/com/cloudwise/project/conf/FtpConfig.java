@@ -2,6 +2,7 @@ package com.cloudwise.project.conf;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Data
@@ -17,4 +18,6 @@ public class FtpConfig {
     private String password;
     @Value("${spring.ftp.ftpPath}")
     private String ftpPath;
+//    @Value("${spring.ftp.tempPath}")
+//    private String tempPath;
 }
