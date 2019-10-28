@@ -31,11 +31,11 @@ public class SftpUtil {
             }
             input.close();
         } catch (JSchException e) {
-            log.error("jsch产生异常",e);
+            log.error("jsch产生异常: "+e,e);
         } catch (SftpException e) {
-            log.error("sftp产生异常错误",e);
+            log.error("sftp产生异常: "+e,e);
         } catch (IOException e) {
-            log.error("IO产生异常",e);
+            log.error("IO产生异常: "+e,e);
         }
         return false;
     }
@@ -63,8 +63,10 @@ public class SftpUtil {
             if (status == -1) {
                 return true;
             }
-        } catch (SftpException | JSchException e) {
-            e.printStackTrace();
+        } catch (SftpException e) {
+            log.error("sftp产生异常： "+e,e);
+        }catch (JSchException e){
+            log.error("jsch产生异常： "+e,e);
         }
         return false;
     }
@@ -90,8 +92,10 @@ public class SftpUtil {
             channel.rmdir(directory);
             channel.exit();
             return true;
-        } catch (SftpException | JSchException e) {
-            e.printStackTrace();
+        }catch (SftpException e) {
+            log.error("sftp产生异常： "+e,e);
+        }catch (JSchException e){
+            log.error("jsch产生异常： "+e,e);
         }
         return false;
     }
