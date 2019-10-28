@@ -1,7 +1,7 @@
 package com.cloudwise.project.controller;
 
 import com.cloudwise.project.service.FileInfoService;
-import com.cloudwise.project.vo.ResultData;
+import com.cloudwise.project.vo.ResultMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Slf4j
 @CrossOrigin
@@ -21,27 +20,28 @@ import java.util.Map;
 public class FileInfoController {
     @Autowired
     private FileInfoService fileInfoService;
+
     @RequestMapping("/upload")
-    public ResultData  uploadFile(@RequestParam("file") MultipartFile file[], @RequestParam("uploader") String uploader) throws IOException {
-        ResultData uploadResult = fileInfoService.uploadFile(file, "uploader");
+    public ResultMessage uploadFile(@RequestParam("file") MultipartFile file[]) throws IOException {
+        ResultMessage uploadResult = fileInfoService.uploadFile(file, "uploader");
         return uploadResult;
     }
 
     @RequestMapping("/delete")
-    public ResultData deleteFile(@RequestParam("name")String name,@RequestParam("type")String type){
-        ResultData deleteResult = fileInfoService.deleteFile(name,type);
+    public ResultMessage deleteFile(@RequestParam("name")String name,@RequestParam("type")String type){
+        ResultMessage deleteResult = fileInfoService.deleteFile(name,type);
         return deleteResult;
     }
 
     @RequestMapping("/getAllfile")
-    public ResultData getAllfile(){
-        ResultData allfile = fileInfoService.getAllfile();
+    public ResultMessage getAllfile() {
+        ResultMessage allfile = fileInfoService.getAllfile();
         return allfile;
     }
 
     @RequestMapping("/getPath")
-    public ResultData getPath(@RequestParam("id")String id){
-        ResultData path = fileInfoService.getPath(id);
+    public ResultMessage getPath(@RequestParam("id") String id) {
+        ResultMessage path = fileInfoService.getPath(id);
         return path;
     }
 }

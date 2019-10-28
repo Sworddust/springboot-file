@@ -11,8 +11,8 @@ import java.io.Serializable;
 @ToString
 @Component
 public class SftpConfig implements Serializable {
-    @Value("${sftp.host}")
-    private String host;
+    @Value("${sftp.ip}")
+    private String ip;
     @Value("${sftp.port}")
     private String port;
     @Value("${sftp.username}")
@@ -21,4 +21,6 @@ public class SftpConfig implements Serializable {
     private String password;
     @Value("${sftp.httpPath}")
     private String httpPath;
+    @Value("${sftp.basePath}")
+    private String basePath;
 }
