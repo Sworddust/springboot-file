@@ -13,14 +13,18 @@ public interface FileInfoMapper {
     @Select("select id,name,path,time,size,uploader,count,type from fileinfo order by time desc")
     List<FileInfo>  getAllfileInfo();
 
+    @Select("select name,type from fileinfo where id=#{id}")
+    FileInfo  selectNameAndType(@Param("id")String id);
+
+
     @Select("select id,name,path,time,size,count,type from fileinfo where id=#{id}")
     FileInfo getFileInfo(@Param("id") String id);
 
     @Select("select name from fileinfo where name=#{name}")
     String checkNameRepeat(@Param("name") String name);
 
-    @Select("select path from fileinfo where id=#{id}")
-    String getPath(@Param("id") String id);
+//    @Select("select path from fileinfo where id=#{id}")
+//    String getPath(@Param("id") String id);
 
 
     @Insert("insert into fileinfo(id,name,path,time,size,uploader,type) values(#{id},#{name},#{path},#{time},#{size},#{uploader},#{type})")
@@ -33,6 +37,6 @@ public interface FileInfoMapper {
     @Update("update fileinfo set time=#{time} , size=#{size} , path=#{path} , uploader=#{uploader} where name=#{name}")
     int updateFileinfo(@Param("time")String time,@Param("size")double size,@Param("path")String path,@Param("uploader")String uploader,@Param("name")String name);
 
-    @Delete("delete from fileinfo where name=#{name}")
-    int deleteFileinfo(@Param("name")String filename);
+    @Delete("delete from fileinfo where id=#{id}")
+    int deleteFileinfo(@Param("id")String id);
 }

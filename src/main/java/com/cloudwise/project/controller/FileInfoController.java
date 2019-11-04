@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URLEncoder;
+import java.util.Map;
 
 @Slf4j
 @CrossOrigin
@@ -28,8 +31,8 @@ public class FileInfoController {
     }
 
     @RequestMapping("/delete")
-    public ResultMessage deleteFile(@RequestParam("name")String name,@RequestParam("type")String type){
-        ResultMessage deleteResult = fileInfoService.deleteFile(name,type);
+    public ResultMessage deleteFile(@RequestParam("id")String id){
+        ResultMessage deleteResult = fileInfoService.deleteFile(id);
         return deleteResult;
     }
 
@@ -39,9 +42,50 @@ public class FileInfoController {
         return allfile;
     }
 
-    @RequestMapping("/getPath")
-    public ResultMessage getPath(@RequestParam("id") String id) {
-        ResultMessage path = fileInfoService.getPath(id);
-        return path;
+    @RequestMapping("/download")
+    public HttpServletResponse download(@RequestParam("id")String id,HttpServletResponse response) throws Exception {
+        Map<String, Object> downResult = fileInfoService.downloadFile(id);
+        //读取本地已经下载的文件流
+        InputStream inputStream=(InputStream)downResult.get("file");
+        //文件名
+        String filename=(String)downResult.get("filename");
+        //默认保存到本地用户主目录
+        String homedirectory = System.getProperty("user.home")+"/";
+        File file=new File(homedirectory+filename);
+        byte[] buffer = new byte[inputStream.available()];
+        inputStream.read(buffer);
+        inputStream.close();
+        // 清空response
+        response.reset();
+        // 设置response的Header
+        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename,"UTF-8"));
+        response.addHeader("Content-Length", "" + file.length());
+        OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
+        response.setContentType("application/octet-stream");
+        toClient.write(buffer);
+        toClient.flush();
+        toClient.close();
+        return null;
     }
 }
+
+
+
+
+//File localfile = (File)downResult.get("localfile");
+//        inputstream.read(buffer);
+//inputstream.close();
+//        response.reset();
+//        response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
+//      response.addHeader("Content-Length", "" + inputstream.available());
+//        response.addHeader("Access-Control-Allow-Origin","*");
+//        response.setContentType("application/octet-stream;charset=UTF-8");
+//        OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
+//        toClient.write(buffer);
+//        toClient.flush();
+//        toClient.close();
+//sftp下载的文件
+//InputStream inputstream =(InputStream)downResult.get("response");
+//文件名
+//        String filename=(String)downResult.get("name");
+//        File localfile=(File)downResult.get("localfile");

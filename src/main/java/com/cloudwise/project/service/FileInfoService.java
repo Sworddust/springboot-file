@@ -3,16 +3,15 @@ package com.cloudwise.project.service;
 import com.cloudwise.project.mapper.FileInfoMapper;
 import com.cloudwise.project.vo.FileInfo;
 import com.cloudwise.project.vo.ResultMessage;
+import com.jcraft.jsch.SftpException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -65,15 +64,37 @@ public class FileInfoService {
 
 
     /**
+     * @Description: 下载
+     * @Author: Locas Hu
+     * @Date: 2019/11/1
+    **/
+    public Map<String, Object> downloadFile(String id) throws IOException, SftpException {
+        Map<String, Object> resultMap = new HashMap<>();
+        FileInfo fileInfo = fileInfoMapper.selectNameAndType(id);
+        Map<String, Object> download = ftpUploadAndDelete.downloadfile(fileInfo.getName()+"."+fileInfo.getType());
+        if (download.get("result").equals(true)){
+            //如果下载成功，增加下载次数
+            fileInfoMapper.updateFileDownCount(id);
+            resultMap.put("filename",fileInfo.getName()+"."+fileInfo.getType());
+            resultMap.put("file",download.get("file"));
+            resultMap.put("result",download.get("result"));
+        }else{
+            resultMap.put("result",download.get("result"));
+        }
+        return resultMap;
+    }
+
+    /**
      * @Description: 删除文件
      * @Author: Locas Hu
      * @Date: 2019/10/11
      **/
-    public ResultMessage deleteFile(String name, String type) {
+    public ResultMessage deleteFile(String id) {
         ResultMessage resultMessage = new ResultMessage();
-        Map<String, Object> delete = ftpUploadAndDelete.delete(name + "." + type);
+        FileInfo fileInfos = fileInfoMapper.selectNameAndType(id);
+        Map<String, Object> delete = ftpUploadAndDelete.delete(fileInfos.getName() + "." + fileInfos.getType());
         if ((Boolean) delete.get("result")) {
-            fileInfoMapper.deleteFileinfo(name);
+            fileInfoMapper.deleteFileinfo(id);
             resultMessage.setCode(200);
             resultMessage.setMsg("删除文件成功");
         }else{
@@ -96,7 +117,6 @@ public class FileInfoService {
             resultMessage.setCode(200);
             resultMessage.setMsg("查询成功");
             resultMessage.setData(allfileInfo);
-            
         } else {
             resultMessage.setCode(404);
             resultMessage.setMsg("查询失败");
@@ -104,25 +124,6 @@ public class FileInfoService {
         return resultMessage;
     }
 
-    /**
-     * @Description: 返回前台下载链接，每调用一次本方法，根据id更新下载次数
-     * @Author: Locas Hu
-     * @Date: 2019/10/9
-     **/
-    public ResultMessage getPath(String id) {
-        ResultMessage resultMessage = new ResultMessage();
-        String path = fileInfoMapper.getPath(id);
-        if (!path.isEmpty() && !path.equals("")) {
-            fileInfoMapper.updateFileDownCount(id);
-            resultMessage.setCode(200);
-            resultMessage.setMsg("下载成功");
-            resultMessage.setData(path);
-        } else {
-            resultMessage.setCode(404);
-            resultMessage.setMsg("下载失败");
-        }
-        return resultMessage;
-    }
 
     /**
      * @Description: 生成随机文档ID

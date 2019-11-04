@@ -21,6 +21,4 @@ public class SftpConfig implements Serializable {
     private String password;
     @Value("${sftp.httpPath}")
     private String httpPath;
-    @Value("${sftp.basePath}")
-    private String basePath;
 }
