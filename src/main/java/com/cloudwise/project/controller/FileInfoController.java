@@ -68,24 +68,3 @@ public class FileInfoController {
         return null;
     }
 }
-
-
-
-
-//File localfile = (File)downResult.get("localfile");
-//        inputstream.read(buffer);
-//inputstream.close();
-//        response.reset();
-//        response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
-//      response.addHeader("Content-Length", "" + inputstream.available());
-//        response.addHeader("Access-Control-Allow-Origin","*");
-//        response.setContentType("application/octet-stream;charset=UTF-8");
-//        OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
-//        toClient.write(buffer);
-//        toClient.flush();
-//        toClient.close();
-//sftp下载的文件
-//InputStream inputstream =(InputStream)downResult.get("response");
-//文件名
-//        String filename=(String)downResult.get("name");
-//        File localfile=(File)downResult.get("localfile");
