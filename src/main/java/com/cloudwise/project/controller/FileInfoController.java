@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,8 +27,9 @@ public class FileInfoController {
     private FileInfoService fileInfoService;
 
     @RequestMapping("/upload")
-    public ResultMessage uploadFile(@RequestParam("file") MultipartFile file[]) throws IOException {
-        ResultMessage uploadResult = fileInfoService.uploadFile(file, "uploader");
+    public List<ResultMessage> uploadFile(@RequestParam("file") MultipartFile file[]) throws IOException {
+        List<ResultMessage> uploadResult = fileInfoService.uploadFile(file, "uploader");
+        System.out.println(uploadResult);
         return uploadResult;
     }
 
@@ -41,6 +44,7 @@ public class FileInfoController {
         ResultMessage allfile = fileInfoService.getAllfile();
         return allfile;
     }
+
 
     @RequestMapping("/download")
     public HttpServletResponse download(@RequestParam("id")String id,HttpServletResponse response) throws Exception {
@@ -65,6 +69,22 @@ public class FileInfoController {
         toClient.write(buffer);
         toClient.flush();
         toClient.close();
+        Date qianend=new Date();
+        Date qianbegin=(Date)downResult.get("qianbegin");
+        long s=qianend.getTime()-qianbegin.getTime();
+        long seconds=0;
+        if (s%1000>500){
+            seconds=s/1000+1;
+        }else {
+            seconds=s/1000;
+        }
+        log.info("从请求下载到浏览器响应一共耗时："+seconds+"s");
         return null;
     }
+
+
+    //    @RequestMapping("/topdf")
+//    public ResultMessage getPDF(@RequestParam("id")String id){
+//        fileInfoService.toPDF();
+//    }
 }

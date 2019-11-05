@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 @Slf4j
@@ -104,16 +106,27 @@ public class SftpUtil {
             boolean connected = sftp.isConnected();
             if (connected) {
                 log.info("创建sftp进程任务成功，执行上传任务");
+                Date begin=new Date();
                 sftp.put(input, filename);
+                Date end=new Date();
+                long s=end.getTime()-begin.getTime();
+                long seconds=0;
+                if (s%1000>500){
+                    seconds=s/1000+1;
+                }else {
+                    seconds=s/1000;
+                }
+                log.info("sftp服务器上传文件: "+filename+" 耗时: "+seconds+"s");
             } else {
                 log.error("创建sftp进程任务失败");
             }
             sftp.exit();
             int status = sftp.getExitStatus();
             if (status == -1) {
+                input.close();
+                logout();
                 return true;
             }
-            input.close();
         } catch (SftpException e) {
             log.error("sftp产生异常: " + e, e);
         } catch (IOException e) {
@@ -122,6 +135,50 @@ public class SftpUtil {
         return false;
     }
 
+
+    /**
+     * @Description: 下载文件
+     * @Author: Locas Hu
+     * @param filename 下载的文件
+     */
+    public Boolean download(String filename, String saveDirectory) throws SftpException, IOException {
+        boolean connected = sftp.isConnected();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+        if (connected) {
+            log.info("创建sftp进程任务成功，执行下载任务");
+        } else {
+            log.error("创建sftp进程任务失败");
+        }
+        File localfile = new File(saveDirectory + filename);
+        if (localfile.exists()) {
+            localfile.delete();
+        }
+        Date begin=new Date();
+        sftp.get(filename, new FileOutputStream(localfile));
+        Date end=new Date();
+        long s=end.getTime()-begin.getTime();
+        long seconds=0;
+        if (s%1000>500){
+            seconds=s/1000+1;
+        }else {
+            seconds=s/1000;
+        }
+        log.info("sftp服务器文件:"+filename+" 下载耗时: "+seconds+"s");
+        sftp.exit();
+        int status = sftp.getExitStatus();
+        if (status == -1) {
+            logout();
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * @Description: 删除指定文件
+     * @Author: Locas Hu
+     * @Date: 2019/11/5
+     **/
     public boolean delete(String filename) {
         try {
             boolean connected = sftp.isConnected();
@@ -134,6 +191,7 @@ public class SftpUtil {
             sftp.exit();
             int status = sftp.getExitStatus();
             if (status == -1) {
+                logout();
                 return true;
             }
         } catch (SftpException e) {
@@ -141,107 +199,6 @@ public class SftpUtil {
         }
         return false;
     }
-
-
-    /**
-     * 下载文件。
-     *
-     * @param filename 下载的文件
-     */
-    public Boolean download(String filename,String saveDirectory) throws SftpException, IOException {
-        boolean connected = sftp.isConnected();
-        if (connected) {
-            log.info("创建sftp进程任务成功，执行下载任务");
-        } else {
-            log.error("创建sftp进程任务失败");
-        }
-        File localfile = new File(saveDirectory + filename);
-        if (localfile.exists()) {
-            localfile.delete();
-        }
-        sftp.get(filename, new FileOutputStream(localfile));
-        sftp.exit();
-            int status = sftp.getExitStatus();
-            if (status == -1) {
-                return true;
-            }
-        return false;
-    }
-
-
-    /**
-     * @Description: 上传文件至sftp服务器
-     * @Author: Locas Hu
-     * @Date: 2019/10/21
-     **/
-//    public static boolean upload(SftpConfig sftpConfig, String filename, InputStream input) {
-//        try {
-//            Session session = connect(sftpConfig);
-//            if (session==null){
-//                log.warn("sftp服务器连接为空，无法上传文件");
-//                return false;
-//            }
-//            ChannelSftp channel = null;
-//            //打开sftp通道
-//            channel = (ChannelSftp) session.openChannel("sftp");
-//            channel.connect();
-//            boolean connected = channel.isConnected();
-//            if(connected){
-//                log.info("创建sftp进程任务成功，执行上传任务");
-//                channel.put(input, filename);
-//            }else{
-//                log.error("创建sftp进程任务失败");
-//            }
-//            channel.exit();
-//            int status = channel.getExitStatus();
-//            if (status == -1) {
-//                return true;
-//            }
-//            input.close();
-//        } catch (JSchException e) {
-//            log.error("jsch产生异常: "+e,e);
-//        } catch (SftpException e) {
-//            log.error("sftp产生异常: "+e,e);
-//        } catch (IOException e) {
-//            log.error("IO产生异常: "+e,e);
-//        }
-//        return false;
-//    }
-
-    /**
-     * @Description: 删除sftp服务器的指定文件
-     * @Author: Locas Hu
-     * @Date: 2019/10/21
-     **/
-//    public static boolean delete(SftpConfig sftpConfig, String filename) {
-//        try {
-//            Session session = connect(sftpConfig);
-//            if (session==null){
-//                log.warn("sftp服务器连接为空，无法删除文件");
-//                return false;
-//            }
-//            ChannelSftp channel = null;
-//            channel = (ChannelSftp) session.openChannel("sftp");
-//            channel.connect();
-//            boolean connected = channel.isConnected();
-//            if(connected){
-//                log.info("创建sftp进程任务成功，执行删除任务");
-//                channel.rm(filename);
-//            }else{
-//                log.error("创建sftp进程任务失败");
-//            }
-//            channel.exit();
-//            int status = channel.getExitStatus();
-//            if (status == -1) {
-//                return true;
-//            }
-//        } catch (SftpException e){
-//            log.error("sftp操作异常: "+e, e);
-//        }catch (JSchException e){
-//            log.error("jsch产生异常: "+e, e);
-//        }
-//        return false;
-//    }
 
     /**
      * @Description: 删除目录下的所有文件以及删除后的空目录（便于后期需求扩展，目前不需要）
@@ -274,39 +231,5 @@ public class SftpUtil {
 //            log.error("jsch产生异常: "+e, e);
 //        }
 //        return false;
-//    }
-
-    /**
-     * @Description: 连接sftp
-     * @Author: Locas Hu
-     * @Date: 2019/10/21
-     **/
-//    public static Session connect(SftpConfig sftpConfig) {
-//        Session session = null;
-//        JSch jsch = new JSch();
-//        try {
-//            //给出连接需要的用户名，ip地址以及端口号
-//            session = jsch.getSession(sftpConfig.getUsername(), sftpConfig.getIp(), Integer.parseInt(sftpConfig.getPort()));
-//            //第一次登陆时候，是否需要提示信息，value可以填写 yes，no或者是ask
-//            session.setConfig("StrictHostKeyChecking", "no");
-//            //设置是否超时
-//            session.setTimeout(30000);
-//            //设置密码
-//            session.setPassword(sftpConfig.getPassword());
-//            //创建连接
-//            session.connect();
-//            if (session == null) {
-//                log.warn("session为空，无法连接");
-//            } else if (session.isConnected() == true) {
-//                log.info("连接sftp服务器成功");
-//            }
-//        } catch (JSchException e) {
-//            log.error("连接sftp服务器异常: "+e,e);
-//            if(session != null){
-//                session.disconnect();
-//                session = null;
-//            }
-//        }
-//        return session;
 //    }
 }

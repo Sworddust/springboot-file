@@ -1,6 +1,7 @@
 package com.cloudwise.project.service;
 
 import java.io.*;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @Description: 文件上传，删除方法
+ * @Description: 文件上传，下载，删除方法
  * @Author: Locas Hu
  * @Date: 2019/10/11
  **/
@@ -29,6 +30,7 @@ public class FtpUploadAndDelete {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         String FileName = file.getOriginalFilename();
         try {
+            localexist(FileName,1);
             SftpUtil sftpUtil = new SftpUtil(sftpConfig);
             sftpUtil.login();
             Boolean uploadResult = sftpUtil.uploadfile(FileName, file.getInputStream());
@@ -45,6 +47,35 @@ public class FtpUploadAndDelete {
         return resultMap;
     }
 
+
+    public Map<String, Object> downloadfile(String filename) throws IOException, SftpException {
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        String homedirectory = System.getProperty("user.home")+"/";
+        int searchlocal = localexist(filename, 2);
+        //如果searchlocal为2说明已经用户主目录已经存在文件，为3说明用户主目录不存在该文件
+        if (searchlocal==2){
+            //前台请求下载开始时间
+            Date qianbegin=new Date();
+            InputStream instream = new BufferedInputStream(new FileInputStream(homedirectory+"/"+filename));
+            resultMap.put("file",instream);
+            resultMap.put("qianbegin",qianbegin);
+            resultMap.put("result",true);
+        }else if(searchlocal==3){
+            ///前台请求下载开始时间
+            Date qianbegin=new Date();
+            SftpUtil sftpUtil = new SftpUtil(sftpConfig);
+            sftpUtil.login();
+            Boolean download = sftpUtil.download(filename, homedirectory);
+            // 以流的形式下载文件。
+            InputStream instream = new BufferedInputStream(new FileInputStream(homedirectory+"/"+filename));
+            resultMap.put("file",instream);
+            resultMap.put("qianbegin",qianbegin);
+            resultMap.put("result",true);
+        }
+        return resultMap;
+    }
+
+
     public Map<String, Object> delete(String filename) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
         SftpUtil sftpUtil = new SftpUtil(sftpConfig);
@@ -54,20 +85,23 @@ public class FtpUploadAndDelete {
         return resultMap;
     }
 
-
-    public Map<String, Object> downloadfile(String filename) throws IOException, SftpException {
-        Map<String, Object> resultMap = new HashMap<String, Object>();
-        SftpUtil sftpUtil = new SftpUtil(sftpConfig);
-        sftpUtil.login();
+    public static int localexist(String filename,int tag){
         String homedirectory = System.getProperty("user.home")+"/";
-        Boolean download = sftpUtil.download(filename, homedirectory);
-        // 取得文件的后缀名。
-        //String ext = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
-        // 以流的形式下载文件。
-        InputStream instream = new BufferedInputStream(new FileInputStream(homedirectory+"/"+filename));
-        resultMap.put("file",instream);
-        resultMap.put("result",true);
-        return resultMap;
+        //上传前判断本地是否有与上传文件重复的文件
+        File file = new File(homedirectory + filename);
+        if (tag==1){
+            if (file.exists()) {
+                file.delete();
+                return 1;
+            }
+        }else {
+            if (file.exists()) {
+                return 2;
+            }else {
+                return 3;
+            }
+        }
+        return 0;
     }
 
 
