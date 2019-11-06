@@ -143,7 +143,6 @@ public class SftpUtil {
      */
     public Boolean download(String filename, String saveDirectory) throws SftpException, IOException {
         boolean connected = sftp.isConnected();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
         if (connected) {
             log.info("创建sftp进程任务成功，执行下载任务");
         } else {
@@ -179,7 +178,7 @@ public class SftpUtil {
      * @Author: Locas Hu
      * @Date: 2019/11/5
      **/
-    public boolean delete(String filename) {
+    public boolean deletefile(String filename) {
         try {
             boolean connected = sftp.isConnected();
             if (connected) {
