@@ -32,10 +32,9 @@ public class FileInfoService {
 
     public List<ResultMessage> uploadFile(MultipartFile file[], String uploader) {
         List<ResultMessage> resultMessages=new ArrayList<>();
-
         for (int i = 0; i < file.length; i++) {
             ResultMessage resultMessage = new ResultMessage();
-            if (file[i].getSize() == 209715200) {
+            if (file[i].getSize() > 209715200) {
                 resultMessage.setCode(400);
                 resultMessage.setMsg(file[i].getOriginalFilename()+"超出上传20M大小限制");
             } else {
@@ -159,35 +158,102 @@ public class FileInfoService {
 //
 //    }
 
-
-    public static boolean getLicense() {
+    private static boolean getLicense() {
         boolean result = false;
         try {
-            InputStream is = new FileInputStream(new File("E:\\IDEA2017\\something2pdf-demo\\src\\main\\resources\\license.xml")); //  license.xml应放在..\WebRoot\WEB-INF\classes路径下
-            License aposeLic = new License();
-            aposeLic.setLicense(is);
+            // 凭证
+            String licenseStr =
+                    "<License>\n" +
+                            "  <Data>\n" +
+                            "    <Products>\n" +
+                            "      <Product>Aspose.Total for Java</Product>\n" +
+                            "      <Product>Aspose.Words for Java</Product>\n" +
+                            "    </Products>\n" +
+                            "    <EditionType>Enterprise</EditionType>\n" +
+                            "    <SubscriptionExpiry>20991231</SubscriptionExpiry>\n" +
+                            "    <LicenseExpiry>20991231</LicenseExpiry>\n" +
+                            "    <SerialNumber>8bfe198c-7f0c-4ef8-8ff0-acc3237bf0d7</SerialNumber>\n" +
+                            "  </Data>\n" +
+                            "  <Signature>sNLLKGMUdF0r8O1kKilWAGdgfs2BvJb/2Xp8p5iuDVfZXmhppo+d0Ran1P9TKdjV4ABwAgKXxJ3jcQTqE/2IRfqwnPf8itN8aFZlV3TJPYeD3yWE7IT55Gz6EijUpC7aKeoohTb4w2fpox58wWoF3SNp6sK6jDfiAUGEHYJ9pjU=</Signature>\n" +
+                            "</License>";
+            InputStream license = new ByteArrayInputStream(licenseStr.getBytes("UTF-8"));
+            License asposeLic = new License();
+            asposeLic.setLicense(license);
             result = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("error:", e);
         }
         return result;
     }
-    public static void doc2pdf(String Address) {
-        if (!getLicense()) {          // 验证License 若不验证则转化出的pdf文档会有水印产生
+
+    public static void word2Pdf(String filename) throws FileNotFoundException {
+        String homedirectory = System.getProperty("user.home")+"/";
+        String pdfpath=System.getProperty("user.home")+"/pdf/";
+        InputStream instream = new BufferedInputStream(new FileInputStream(homedirectory+"/"+filename));
+        File file = new File(pdfpath);
+        if(file.exists()){
+            file.mkdirs();
+        }
+        FileOutputStream fileOS = null;
+        // 验证License
+        if (!getLicense()) {
+            log.error("验证License失败！");
             return;
         }
         try {
-            long old = System.currentTimeMillis();
-            File file = new File("F:\\pdf/pdf1.pdf");  //新建一个空白pdf文档
-            FileOutputStream os = new FileOutputStream(file);
-            Document doc = new Document(Address);                    //Address是将要被转化的word文档
-            doc.save(os, SaveFormat.PDF);//全面支持DOC, DOCX, OOXML, RTF HTML, OpenDocument, PDF, EPUB, XPS, SWF 相互转换
-            long now = System.currentTimeMillis();
-            System.out.println("共耗时：" + ((now - old) / 1000.0) + "秒");  //转化用时
+            Document doc = new Document(instream);
+            fileOS = new FileOutputStream(new File(pdfpath));
+            // 保存转换的pdf文件
+            doc.save(fileOS, SaveFormat.PDF);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("error:", e);
+        } finally {
+            try {
+                if(fileOS != null){
+                    fileOS.close();
+                }
+            } catch (IOException e) {
+                log.error("error:", e);
+            }
         }
     }
+
+
+    public static void main(String[] args) throws FileNotFoundException {
+        String homedirectory = System.getProperty("user.home")+"/";
+        String pdfpath=System.getProperty("user.home")+"/pdf/";
+        InputStream instream = new BufferedInputStream(new FileInputStream("/Users/humingrui/Desktop/"+"文档上传下载需求分析.docx"));
+        File file = new File(pdfpath);
+        if(file.exists()){
+            file.mkdirs();
+        }
+        FileOutputStream fileOS = null;
+        // 验证License
+        if (!getLicense()) {
+            log.error("验证License失败！");
+            return;
+        }
+        try {
+            Document doc = new Document(instream);
+            fileOS = new FileOutputStream(new File(pdfpath));
+            // 保存转换的pdf文件
+            doc.save(fileOS, SaveFormat.PDF);
+        } catch (Exception e) {
+            log.error("error:", e);
+        } finally {
+            try {
+                if(fileOS != null){
+                    fileOS.close();
+                }
+            } catch (IOException e) {
+                log.error("error:", e);
+            }
+        }
+    }
+
+
+
+
 
     /**
      * @Description: 生成随机文档ID
