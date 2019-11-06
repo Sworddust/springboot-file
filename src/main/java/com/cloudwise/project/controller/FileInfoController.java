@@ -29,7 +29,6 @@ public class FileInfoController {
     @RequestMapping("/upload")
     public List<ResultMessage> uploadFile(@RequestParam("file") MultipartFile file[]) throws IOException {
         List<ResultMessage> uploadResult = fileInfoService.uploadFile(file, "uploader");
-        System.out.println(uploadResult);
         return uploadResult;
     }
 
