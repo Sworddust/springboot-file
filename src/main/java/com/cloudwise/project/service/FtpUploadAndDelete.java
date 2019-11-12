@@ -45,7 +45,7 @@ public class FtpUploadAndDelete {
                     threadFactory,
                     new ThreadPoolExecutor.AbortPolicy());
             downExecutor.execute(new backtolocal(FileName, homedirectory));
-            downExecutor.shutdown();;
+            downExecutor.shutdown();
             if (uploadResult) {
                 String path = sftpConfig.getSftpPath() + "/" + FileName;
                 resultMap.put("result", uploadResult);
@@ -59,17 +59,25 @@ public class FtpUploadAndDelete {
         return resultMap;
     }
 
-    //线程池工厂
+    /**
+     * @Description: 线程工厂
+     * @Author: Locas Hu
+     * @Date: 2019/11/12
+    **/
     class ThreadFactoryBuilder implements ThreadFactory {
         @Override
         public Thread newThread(@NonNull Runnable r) {
             Thread thread = new Thread(r);
-            thread.setName("testThread");
+            thread.setName("downTread");
             return thread;
         }
     }
 
-    //线程任务
+    /**
+     * @Description: 线程任务
+     * @Author: Locas Hu
+     * @Date: 2019/11/12
+    **/
     class backtolocal implements Runnable {
         private String filename;
         private String saveDirectory;
@@ -104,7 +112,7 @@ public class FtpUploadAndDelete {
         if (searchlocal == 2) {
             //前台请求下载开始时间
             Date qianbegin = new Date();
-            InputStream instream = new BufferedInputStream(new FileInputStream(homedirectory + "/" + filename));
+            InputStream instream = new BufferedInputStream(new FileInputStream(homedirectory  + filename));
             resultMap.put("file", instream);
             resultMap.put("qianbegin", qianbegin);
             resultMap.put("result", true);
@@ -115,7 +123,7 @@ public class FtpUploadAndDelete {
             sftpUtil.login();
             Boolean download = sftpUtil.download(filename, homedirectory);
             // 以流的形式下载文件。
-            InputStream instream = new BufferedInputStream(new FileInputStream(homedirectory + "/" + filename));
+            InputStream instream = new BufferedInputStream(new FileInputStream(homedirectory  + filename));
             resultMap.put("file", instream);
             resultMap.put("qianbegin", qianbegin);
             resultMap.put("result", true);

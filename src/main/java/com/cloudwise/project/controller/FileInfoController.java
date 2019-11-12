@@ -27,8 +27,8 @@ public class FileInfoController {
     private FileInfoService fileInfoService;
 
     @RequestMapping("/upload")
-    public List<ResultMessage> uploadFile(@RequestParam("file") MultipartFile file[]) throws IOException {
-        List<ResultMessage> uploadResult = fileInfoService.uploadFile(file, "uploader");
+    public ResultMessage uploadFile(@RequestParam("file") MultipartFile file[]) throws IOException {
+        ResultMessage uploadResult = fileInfoService.uploadFile(file, "uploader");
         return uploadResult;
     }
 

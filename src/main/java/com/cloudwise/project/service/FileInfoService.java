@@ -30,13 +30,20 @@ public class FileInfoService {
      * @Date: 2019/10/9
      **/
 
-    public List<ResultMessage> uploadFile(MultipartFile file[], String uploader) {
-        List<ResultMessage> resultMessages=new ArrayList<>();
+    public ResultMessage uploadFile(MultipartFile file[], String uploader) {
+        ResultMessage resultMessage = new ResultMessage();
+        StringBuilder uploadResult=new StringBuilder();
+        if(file.length==0){
+            log.error("上传文件为空");
+            resultMessage.setCode(404);
+            resultMessage.setMsg("上传文件为空");
+        }
         for (int i = 0; i < file.length; i++) {
-            ResultMessage resultMessage = new ResultMessage();
-            if (file[i].getSize() > 209715200) {
+            if (file[i].getSize() > 20971520) {
                 resultMessage.setCode(400);
-                resultMessage.setMsg(file[i].getOriginalFilename()+"超出上传20M大小限制");
+                uploadResult.append(file[i].getOriginalFilename()+"超出上传20M大小限制 ");
+                resultMessage.setMsg(uploadResult.toString());
+                continue;
             } else {
                 //截取文件名
                 String name = file[i].getOriginalFilename().substring(0, file[i].getOriginalFilename().lastIndexOf("."));
@@ -56,22 +63,29 @@ public class FileInfoService {
                     if (filename != null && !filename.equals("")) {
                         fileInfoMapper.updateFileinfo(time, size, upload.get("path").toString(), uploader, name);
                         resultMessage.setCode(200);
-                        resultMessage.setMsg("更新上传文件信息成功");
+                        uploadResult.append(file[i].getOriginalFilename()+"更新文件信息成功 ");
+                        resultMessage.setMsg(uploadResult.toString());
                     } else {
                         fileInfoMapper.insertFileInfo(id, name, upload.get("path").toString(), time, size, uploader, type);
                         resultMessage.setCode(200);
-                        resultMessage.setMsg("上传文件成功");
+                        uploadResult.append(file[i].getOriginalFilename()+"上传成功 ");
+                        resultMessage.setMsg(uploadResult.toString());
                     }
                 } else {
                     resultMessage.setCode(404);
-                    resultMessage.setMsg("上传失败");
+                    uploadResult.append(file[i].getOriginalFilename()+"上传失败\t");
+                    resultMessage.setMsg(uploadResult.toString());
                 }
             }
-            resultMessages.add(resultMessage);
         }
-        return resultMessages;
+        return resultMessage;
     }
 
+    public static void main(String[] args) {
+        StringBuilder uploadResult=new StringBuilder();
+        uploadResult.append("askjd\t").append("sadas\t");
+        System.out.println(uploadResult);
+    }
 
     /**
      * @Description: 下载
@@ -219,37 +233,37 @@ public class FileInfoService {
     }
 
 
-    public static void main(String[] args) throws FileNotFoundException {
-        String homedirectory = System.getProperty("user.home")+"/";
-        String pdfpath=System.getProperty("user.home")+"/pdf/";
-        InputStream instream = new BufferedInputStream(new FileInputStream("/Users/humingrui/Desktop/"+"文档上传下载需求分析.docx"));
-        File file = new File(pdfpath);
-        if(file.exists()){
-            file.mkdirs();
-        }
-        FileOutputStream fileOS = null;
-        // 验证License
-        if (!getLicense()) {
-            log.error("验证License失败！");
-            return;
-        }
-        try {
-            Document doc = new Document(instream);
-            fileOS = new FileOutputStream(new File(pdfpath));
-            // 保存转换的pdf文件
-            doc.save(fileOS, SaveFormat.PDF);
-        } catch (Exception e) {
-            log.error("error:", e);
-        } finally {
-            try {
-                if(fileOS != null){
-                    fileOS.close();
-                }
-            } catch (IOException e) {
-                log.error("error:", e);
-            }
-        }
-    }
+//    public static void main(String[] args) throws FileNotFoundException {
+//        String homedirectory = System.getProperty("user.home")+"/";
+//        String pdfpath=System.getProperty("user.home")+"/pdf/";
+//        InputStream instream = new BufferedInputStream(new FileInputStream("/Users/humingrui/Desktop/"+"文档上传下载需求分析.docx"));
+//        File file = new File(pdfpath);
+//        if(file.exists()){
+//            file.mkdirs();
+//        }
+//        FileOutputStream fileOS = null;
+//        // 验证License
+//        if (!getLicense()) {
+//            log.error("验证License失败！");
+//            return;
+//        }
+//        try {
+//            Document doc = new Document(instream);
+//            fileOS = new FileOutputStream(new File(pdfpath));
+//            // 保存转换的pdf文件
+//            doc.save(fileOS, SaveFormat.PDF);
+//        } catch (Exception e) {
+//            log.error("error:", e);
+//        } finally {
+//            try {
+//                if(fileOS != null){
+//                    fileOS.close();
+//                }
+//            } catch (IOException e) {
+//                log.error("error:", e);
+//            }
+//        }
+//    }
 
 
 
