@@ -1,8 +1,5 @@
 package com.cloudwise.project.service;
 
-import com.aspose.words.Document;
-import com.aspose.words.License;
-import com.aspose.words.SaveFormat;
 import com.cloudwise.project.mapper.FileInfoMapper;
 import com.cloudwise.project.vo.FileInfo;
 import com.cloudwise.project.vo.ResultMessage;
@@ -172,65 +169,7 @@ public class FileInfoService {
 //
 //    }
 
-    private static boolean getLicense() {
-        boolean result = false;
-        try {
-            // 凭证
-            String licenseStr =
-                    "<License>\n" +
-                            "  <Data>\n" +
-                            "    <Products>\n" +
-                            "      <Product>Aspose.Total for Java</Product>\n" +
-                            "      <Product>Aspose.Words for Java</Product>\n" +
-                            "    </Products>\n" +
-                            "    <EditionType>Enterprise</EditionType>\n" +
-                            "    <SubscriptionExpiry>20991231</SubscriptionExpiry>\n" +
-                            "    <LicenseExpiry>20991231</LicenseExpiry>\n" +
-                            "    <SerialNumber>8bfe198c-7f0c-4ef8-8ff0-acc3237bf0d7</SerialNumber>\n" +
-                            "  </Data>\n" +
-                            "  <Signature>sNLLKGMUdF0r8O1kKilWAGdgfs2BvJb/2Xp8p5iuDVfZXmhppo+d0Ran1P9TKdjV4ABwAgKXxJ3jcQTqE/2IRfqwnPf8itN8aFZlV3TJPYeD3yWE7IT55Gz6EijUpC7aKeoohTb4w2fpox58wWoF3SNp6sK6jDfiAUGEHYJ9pjU=</Signature>\n" +
-                            "</License>";
-            InputStream license = new ByteArrayInputStream(licenseStr.getBytes("UTF-8"));
-            License asposeLic = new License();
-            asposeLic.setLicense(license);
-            result = true;
-        } catch (Exception e) {
-            log.error("error:", e);
-        }
-        return result;
-    }
 
-    public static void word2Pdf(String filename) throws FileNotFoundException {
-        String homedirectory = System.getProperty("user.home")+"/";
-        String pdfpath=System.getProperty("user.home")+"/pdf/";
-        InputStream instream = new BufferedInputStream(new FileInputStream(homedirectory+"/"+filename));
-        File file = new File(pdfpath);
-        if(file.exists()){
-            file.mkdirs();
-        }
-        FileOutputStream fileOS = null;
-        // 验证License
-        if (!getLicense()) {
-            log.error("验证License失败！");
-            return;
-        }
-        try {
-            Document doc = new Document(instream);
-            fileOS = new FileOutputStream(new File(pdfpath));
-            // 保存转换的pdf文件
-            doc.save(fileOS, SaveFormat.PDF);
-        } catch (Exception e) {
-            log.error("error:", e);
-        } finally {
-            try {
-                if(fileOS != null){
-                    fileOS.close();
-                }
-            } catch (IOException e) {
-                log.error("error:", e);
-            }
-        }
-    }
 
 
 //    public static void main(String[] args) throws FileNotFoundException {
