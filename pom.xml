@@ -7,6 +7,7 @@
     <groupId>com.cloudwise.project</groupId>
     <artifactId>springboot-file</artifactId>
     <version>1.0</version>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -21,6 +22,7 @@
             </properties>
         </profile>
     </profiles>
+    <packaging>war</packaging>
     <repositories>
         <repository>
             <id>com.e-iceblue</id>
