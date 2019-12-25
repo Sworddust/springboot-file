@@ -40,11 +40,7 @@ public class FileInfoController {
 
     @RequestMapping("/getAllfile")
     public ResultMessage getAllfile() {
-        System.out.println("运行成功-------------------------------");
-        //ResultMessage allfile = fileInfoService.getAllfile();
-        ResultMessage allfile=new ResultMessage();
-        allfile.setMsg("成功--------");
-        allfile.setCode(200);
+        ResultMessage allfile = fileInfoService.getAllfile();
         return allfile;
     }
 
