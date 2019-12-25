@@ -22,7 +22,7 @@
             </properties>
         </profile>
     </profiles>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <repositories>
         <repository>
             <id>com.e-iceblue</id>
