@@ -42,6 +42,8 @@ public class FileInfoController {
     public ResultMessage getAllfile() {
         System.out.println("运行成功-------------------------------");
         ResultMessage allfile = fileInfoService.getAllfile();
+        allfile.setMsg("成功--------");
+        allfile.setCode(200);
         return allfile;
     }
 
