@@ -11,12 +11,12 @@ appender("Console", ConsoleAppender) {
 
 }
 appender("R", RollingFileAppender) {
-    file = "logs/console.log"
+    file = "/data/logs/console.log"
     encoder(PatternLayoutEncoder) {
         pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
     }
     rollingPolicy(SizeAndTimeBasedRollingPolicy) {
-        fileNamePattern = "logs/%d{yyyy-MM-dd}.%i.log"
+        fileNamePattern = "/data/logs/%d{yyyy-MM-dd}.%i.log"
         maxFileSize = "1024MB"
         maxHistory = 7
         totalSizeCap = FileSize.valueOf("1024MB")
