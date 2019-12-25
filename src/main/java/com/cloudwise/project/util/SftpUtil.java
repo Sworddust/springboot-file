@@ -3,11 +3,7 @@ package com.cloudwise.project.util;
 import com.cloudwise.project.conf.SftpConfig;
 import com.jcraft.jsch.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;

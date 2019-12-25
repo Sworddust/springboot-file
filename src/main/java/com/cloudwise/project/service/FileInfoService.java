@@ -78,11 +78,6 @@ public class FileInfoService {
         return resultMessage;
     }
 
-    public static void main(String[] args) {
-        StringBuilder uploadResult=new StringBuilder();
-        uploadResult.append("askjd\t").append("sadas\t");
-        System.out.println(uploadResult);
-    }
 
     /**
      * @Description: 下载
