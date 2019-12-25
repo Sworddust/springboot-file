@@ -41,6 +41,7 @@ public class FileInfoController {
     @RequestMapping("/getAllfile")
     public ResultMessage getAllfile() {
         ResultMessage allfile = fileInfoService.getAllfile();
+        System.out.println("运行成功-------------------------------");
         return allfile;
     }
 
