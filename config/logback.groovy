@@ -11,7 +11,7 @@ appender("Console", ConsoleAppender) {
 
 }
 appender("R", RollingFileAppender) {
-    file = "logs/console.log"
+    file = "/data/logs/console.log"
     encoder(PatternLayoutEncoder) {
         pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
     }
