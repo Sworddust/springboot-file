@@ -1,4 +1,4 @@
-package config
+
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder
@@ -15,7 +15,7 @@ appender("R", RollingFileAppender) {
         pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
     }
     rollingPolicy(SizeAndTimeBasedRollingPolicy) {
-        fileNamePattern = "/Users/humingrui/logs/houtai_%d{yyyy-MM-dd}.%i.log"
+        fileNamePattern = "/data/logs/houtai_%d{yyyy-MM-dd}.%i.log"
         maxFileSize = "1024MB"
         maxHistory = 7
         totalSizeCap = FileSize.valueOf("1024MB")
