@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
-@PropertySource(value="file:config/application.properties",encoding="UTF-8")
+@PropertySource(value="classpath:/config/application.properties",encoding="UTF-8")
 @SpringBootApplication
 @ServletComponentScan
 public class Application {
